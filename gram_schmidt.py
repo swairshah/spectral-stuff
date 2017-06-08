@@ -1,8 +1,9 @@
 import numpy as np
-from numpy.linalg import norm
-from numpy.linalg import qr
+from numpy.linalg import norm, qr
 
-def GramSchmidt(X):
+tol = 1e-8
+
+def gram_schmidt(X):
     r, c = X.shape
     Q = np.zeros((r,c))
     for j in range(c):
@@ -18,20 +19,25 @@ def GramSchmidt(X):
            Q[:,j] = q
     return Q
 
+def modified_gs(X):
+    r, c = X.shape
+    Q = X.copy()
+    for i in range(c):
+        q_norm = norm(Q[:, i])
+        if q_norm > tol:
+            Q[:, i] = Q[:, i]/q_norm
+        else:
+            Q[:, i] = np.zeros(r)
+
+        for j in range(i+1, c):
+            proj = np.dot(Q[:, i], Q[:, j])
+            Q[:, j] = Q[:, j] - proj*Q[:, i]
+    return Q
+
+def remove_zero_cols(X):
+    return X[:,[norm(i) > tol for i in X.T]]
+
 #XXX:Fix these, some issue.
-#def ModifiedGS(X):
-#    r, c = X.shape
-#    Q = X.copy()
-#    for i in range(c):
-#        q_norm = norm(Q[:, i])
-#        if q_norm != 0:
-#            Q[:, i] = Q[:, i]/q_norm
-#
-#        for j in range(i+1, c):
-#            proj = np.dot(Q[:, i], Q[:, j])
-#            Q[:, j] = Q[:, j] - proj*Q[:, i]
-#    return Q
-#
 #def PivotedGS(X):
 #    r, c = X.shape
 #    Q = X.copy()
@@ -54,7 +60,7 @@ if __name__ == "__main__":
     x = np.random.normal(size = (3000,300))
 
     print(norm(qr(x)[0], ord = 'fro'))
-    print(norm(GramSchmidt(x), ord = 'fro'))
+    print(norm(gram_schmidt(x), ord = 'fro'))
 
     y = np.array([
         [1,1,1,1],
@@ -62,4 +68,4 @@ if __name__ == "__main__":
         [1,2,3,1]
         ])
 
-    print(GramSchmidt(y))
+    print(gram_schmidt(y))

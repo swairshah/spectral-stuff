@@ -3,6 +3,10 @@ from numpy.linalg import norm
 
 tol = 1E-8
 
+def print_cols(X):
+    for i in range(X.shape[1]):
+        print(X[:,i])
+
 def sort_cols_by_norm(X):
     r, c = X.shape
     norm_list = []

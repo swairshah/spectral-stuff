@@ -1,5 +1,3 @@
-%load_ext autoreload      
-%autoreload 2
 from gram_schmidt import *
 from matrix_stuff import *
 

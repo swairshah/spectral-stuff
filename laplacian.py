@@ -32,6 +32,20 @@ def GenDumbbellGraph(n1, n2):
 
     return I
 
+def GraphFromIncidenceMatrix(E):
+    G = nx.Graph()
+    n, m = E.shape
+    for i in range(n):
+        G.add_node(i)
+
+    for e in E.T:
+        u = np.where(e == 1)[0][0]
+        v = np.where(e == -1)[0][0]
+        G.add_edge(u, v)
+
+    return G
+
+
 def IncidenceMatrix(G):
     n = len(G.nodes())
     e = len(G.edges())
@@ -66,38 +80,40 @@ def Draw(G):
 
 
 def test_pinv():
-    G = GenDumbbellGraph(7,8)
+    #G = GenDumbbellGraph(7,8)
+    G = nx.complete_graph(10)
     L = Laplacian(G)
     E = IncidenceMatrix(G)
     L_plus = np.linalg.pinv(L)
 
-    print("with L ", norm(ConjugatePinv(L, L) - L_plus))
-    print("with E ", norm(ConjugatePinv(E, L) - L_plus))
+    print("with L ", norm(conjugate_pinv(L, L) - L_plus))
+    print("with E ", norm(conjugate_pinv(E, L) - L_plus))
 
     ES = E[:, sort_cols_by_norm(E)]
-    print("sorted E ", norm(ConjugatePinv(ES, L) - L_plus))
+    print("sorted E ", norm(conjugate_pinv(ES, L) - L_plus))
 
     EL = np.zeros(E.shape)
     n = E.shape[1]; ES = E[:, np.random.randint(n, size = n)]
-    print("shuffled E ", norm(ConjugatePinv(EL, L) - L_plus))
+    print("shuffled E ", norm(conjugate_pinv(EL, L) - L_plus))
 
     EC = E[:, sort_cols_conjugate(E, L)]
-    print("conj sorted E ", norm(ConjugatePinv(EC, L) - L_plus))
+    print("conj sorted E ", norm(conjugate_pinv(EC, L) - L_plus))
 
-    I = np.eye(15)
-    R = np.random.uniform(size = (15,50))
-    print("Identity",norm(ConjugatePinv(I, L) - L_plus))
-    print("Random", norm(ConjugatePinv(R, L) - L_plus))
+    n = L.shape[1]
+    I = np.eye(n)
+    R = np.random.uniform(size = (n,2*n))
+    print("Identity",norm(conjugate_pinv(I, L) - L_plus))
+    print("Random", norm(conjugate_pinv(R, L) - L_plus))
 
     RL = np.zeros(R.shape)
     n = RL.shape[1]; RS = RL[:, np.random.randint(n, size = n)]
-    print("Random shuffled", norm(ConjugatePinv(RS, L) - L_plus))
+    print("Random shuffled", norm(conjugate_pinv(RS, L) - L_plus))
 
     n = L.shape[1]; RL[:,range(n)] = L[:,range(n)]
-    print("Random + L cols (first)", norm(ConjugatePinv(RL, L) - L_plus)) 
+    print("Random + L cols (first)", norm(conjugate_pinv(RL, L) - L_plus)) 
 
-    n = L.shape[1]; RL[:,range(20,n+20)] = L[:,range(n)]
-    print("Random + L cols (middle)", norm(ConjugatePinv(RL, L) - L_plus)) 
+    #n = L.shape[1]; RL[:,range(20,n+20)] = L[:,range(n)]
+    #print("Random + L cols (middle)", norm(conjugate_pinv(RL, L) - L_plus)) 
 
 if __name__ == "__main__":
     #G = GenDumbbellGraph(7,8)
@@ -106,16 +122,16 @@ if __name__ == "__main__":
     E = IncidenceMatrix(G)
     L_plus = np.linalg.pinv(L)
 
-    print(np.linalg.svd(L)[1])
+    #print(np.linalg.svd(L)[1])
+
+    ##for i in range(E.shape[1]):
+    ##    print(norm(proj(E[:,i], L)))
 
     #for i in range(E.shape[1]):
-    #    print(norm(proj(E[:,i], L)))
+    #    print(norm(proj_ortho_to_null(E[:,i], L)))
 
-    for i in range(E.shape[1]):
-        print(norm(proj_ortho_to_null(E[:,i], L)))
-
-    print()
-    for i in range(L.shape[1]):
-        print(norm(proj_ortho_to_null(L[:,i], L)))
-
-
+    #print()
+    #for i in range(L.shape[1]):
+    #    print(norm(proj_ortho_to_null(L[:,i], L)))
+    #
+    test_pinv()

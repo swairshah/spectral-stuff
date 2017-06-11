@@ -7,6 +7,10 @@ def print_cols(X):
     for i in range(X.shape[1]):
         print(X[:,i])
 
+def shuffle_cols(X):
+    n = X.shape[1]; 
+    return X[:, np.random.randint(n, size = n)]
+
 def sort_cols_by_norm(X):
     r, c = X.shape
     norm_list = []

@@ -5,9 +5,7 @@ from matrix_stuff import *
 tol = 1E-8
 
 def conjugate_gs(X, A):
-    #col_norms = [(i, norm(X[:,i])) for i in range(c)]
-    #col_norms = sorted(col_norms, key = lambda tup : tup[1])
-    #indices = [i[0] for i in col_norms]
+    #U = X
     U = remove_zero_cols(modified_gs(X))
     r, c = U.shape
     P = U.copy()

@@ -3,6 +3,10 @@ from numpy.linalg import norm
 
 tol = 1E-8
 
+def eigens(X):
+    _, s, _ = np.linalg.svd(X.dot(X.T))
+    return s
+
 def print_cols(X):
     for i in range(X.shape[1]):
         print(X[:,i])

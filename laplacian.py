@@ -11,7 +11,8 @@ from conjugate_gs import *
 from matrix_stuff import *
 
 def GenDumbbellGraph(n1, n2):
-    """ generates graph with two clusters of n1-clique
+    """ 
+    generates graph with two clusters of n1-clique
     and n2-clique with one node from each clique 
     connected to each other
     """
@@ -45,6 +46,26 @@ def GraphFromIncidenceMatrix(E):
 
     return G
 
+def ScoreDict(E, L):
+    scores = {}
+    for e in E.T: 
+        score = e.T @ L @ e
+        scores[EdgeLabel(e)] = score
+    return scores
+
+def MaxEdgeScore(E, L):
+    """
+    return the edge label with max (e.T @ L @ e), 
+    and its score
+    """
+    edge = None
+    max_score = -1
+    for e in E.T: 
+        score = e.T @ L @ e
+        if score > max_score:
+            max_score = score
+            edge = e
+    return EdgeLabel(edge), max_score
 
 def IncidenceMatrix(G):
     n = len(G.nodes())
@@ -63,6 +84,13 @@ def DegreeMatrix(G):
 def AdjacancyMatrix(G):
     return nx.attr_matrix(G)[0]
 
+def EdgeLabel(e):
+    return tuple(np.nonzero(e)[0])
+
+def MaxDegreeNode(G):
+    deg = G.degree()
+    return max(deg, key=deg.get)
+
 def Laplacian(G):
     E = IncidenceMatrix(G)
     L = E.dot(E.T)
@@ -73,11 +101,11 @@ def Laplacian(G):
     # scipy.sparse.csr_matrix.todense(nx.laplacian_matrix(G))
     return L
 
-def Draw(G):
-    pos = nx.fruchterman_reingold_layout(G)
+def Draw(G, pos = None):
+    if pos == None:
+        pos = nx.fruchterman_reingold_layout(G)
     nx.draw_networkx(G, node_color = 'orange', alpha = 0.6, pos = pos)
     plt.show()
-
 
 def test_pinv():
     #G = GenDumbbellGraph(7,8)
@@ -119,6 +147,7 @@ if __name__ == "__main__":
     #G = GenDumbbellGraph(7,8)
     G = nx.complete_graph(10)
     L = Laplacian(G)
+    Draw(G)
     E = IncidenceMatrix(G)
     L_plus = np.linalg.pinv(L)
 

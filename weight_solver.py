@@ -30,27 +30,6 @@ def solve_for_w(X, Y):
     w = Aw.sum(axis = 1)
     return w
 
-def solve_for_w_laplacian(L, Y):
-    m, m = L.shape
-    assert(Y.shape[0] == m)
-    r = Y.shape[1]
-
-    Ax = np.zeros((m*m, n))
-    Ay = np.zeros((m*m, r))
-
-    for i in range(n):
-        xxt = np.outer(X[:,i],X[:,i])
-        Ax[:,i] = vectorize(xxt)
-
-    for i in range(r):
-        yyt = np.outer(Y[:,i],Y[:,i])
-        Ay[:,i] = vectorize(yyt)
-
-    Aw = np.linalg.pinv(Ay) @ Ax
-
-    w = Aw.sum(axis = 1)
-    return w
-
 def iterative_column_removal(E, F, k, tol=1e-10):
     m, n = E.shape
     r = F.shape[1]
